@@ -7,7 +7,6 @@ namespace BSTDistance
     class MyTree
     {
         public Node Root { get; set; }
-        public int Distance { get; set; }
 
         //Build the tree
 
@@ -86,24 +85,36 @@ namespace BSTDistance
 
         public Node FindNode(Node node, int targetValue)
         {
-            if (node == null)
-            {
-                return null;
-            }
-            if (node.Value == targetValue)
+            //If our input is null or our target return the input
+            if (node == null || node.Value == targetValue)
             {
                 return node;
             }
-            Distance++;
-            Node right = FindNode(node.RightChild, targetValue);
-            Node left = FindNode(node.LeftChild, targetValue);
-            if (left != null && right != null)
+            //Because BST we know the structure of our nodes
+            if (node.Value > targetValue)
             {
-                return node;
+                return FindNode(node.LeftChild, targetValue);
             }
             else
             {
-                return (left != null ? left : right);
+                return FindNode(node.LeftChild, targetValue);
+            }
+        }
+
+        public int FindDistance(Node node, int targetValue, int currentDistance)
+        {
+            if (node == null || node.Value == targetValue)
+            {
+                return currentDistance;
+            }
+            currentDistance = currentDistance++;
+            if (node.Value > targetValue)
+            {
+                return FindDistance(node.LeftChild, targetValue, currentDistance);
+            }
+            else
+            {
+                return FindDistance(node.LeftChild, targetValue, currentDistance);
             }
         }
 
@@ -120,12 +131,11 @@ namespace BSTDistance
                     return runner;
                 }
                 //If not move add the children to the queue and increment distance
-                Distance++;
-                if (runner.LeftChild != null)
+                if (runner.Value > targetValue)
                 {
                     stepQueue.Enqueue(runner.LeftChild);
                 }
-                if (runner.RightChild != null)
+                else
                 {
                     stepQueue.Enqueue(runner.RightChild);
                 }
@@ -160,18 +170,10 @@ namespace BSTDistance
             }
         }
 
-        public int FindDistance(Node node, int nodeValue1, int nodeValue2)
+        public int NodeDistance(int nodeValue1, int nodeValue2)
         {
-            FindNode(Root, nodeValue1);
-            int node1Distance = Distance;
-            Distance = 0;
-            FindNode(Root, nodeValue2);
-            int node2Distance = Distance;
-            Distance = 0;
-            LCA(Root, nodeValue1, nodeValue2);
-            int lcaDistance = Distance;
-            Distance = 0;
-            return node1Distance + node2Distance - (2 * lcaDistance);
+            Node lca = LCA(Root, nodeValue1, nodeValue2);
+            return FindDistance(lca, nodeValue1, 0) + FindDistance(lca, nodeValue2, 0);
         }
     }
 }
