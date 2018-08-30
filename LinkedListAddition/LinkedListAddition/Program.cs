@@ -18,6 +18,7 @@ namespace LinkedListAddition
         */
         static void Main(string[] args)
         {
+            //test variables
             int[] testArray = new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
             ListNode llOne = new ListNode(2);
             llOne.next = new ListNode(4);
@@ -26,14 +27,19 @@ namespace LinkedListAddition
             llTwo.next = new ListNode(6);
             llTwo.next.next = new ListNode(4);
             ListNode llLong = new ListNode(1);
+            ListNode llThree = new ListNode(9);
+            llThree.next = new ListNode(9);
+            ListNode llFour = new ListNode(1);
             ListNode addRunner = llLong;
             for (int i = 1; i < testArray.Length; i++)
             {
                 addRunner.next = new ListNode(testArray[i]);
                 addRunner = addRunner.next;
             }
+            //test
+            ListNode runner = AddTwoNumbers(llThree, llFour);
+            //Display
             Console.WriteLine("Expected 708");
-            ListNode runner = AddTwoNumbers(llLong, llTwo);
             while (runner != null)
             {
                 Console.Write($"{runner.val}");
@@ -45,32 +51,62 @@ namespace LinkedListAddition
         public static ListNode AddTwoNumbers(ListNode l1, ListNode l2)
         {
             //Setup variables
-            string lOneString = "";
-            string lTwoString = "";
-            //parse the linked lists into strings
-            while (l1 != null)
+            int carryOver = 0;
+            int startValue = l1.val + l2.val;
+            if (startValue >= 10)
             {
-                lOneString = $"{l1.val}{lOneString}";
-                l1 = l1.next;
+                carryOver = 1;
+                startValue = startValue - 10;
             }
-            while (l2 != null)
+            else
             {
-                lTwoString = $"{l2.val}{lTwoString}";
-                l2 = l2.next;
+                carryOver = 0;
             }
-            //Parse the strings into ints then into a sum
-            ulong longtest = ulong.Parse(lOneString);
-            ulong total = longtest + ulong.Parse(lTwoString);
-            //Covert the int sum into a string to then covert it back into linked lists
-            string sTotal = total.ToString();
-            //Setup our answer list
-            ListNode lA = new ListNode(int.Parse(sTotal[sTotal.Length-1].ToString()));
-            //Setup a runner to pass new values into our answer list
+            l1 = l1.next;
+            l2 = l2.next;
+            ListNode lA = new ListNode(startValue);
+            if (l1 == null && l2 == null && carryOver > 0)
+            {
+                lA.next = new ListNode(carryOver);
+            }
             ListNode runner = lA;
-            for (int i = sTotal.Length-2; i >= 0; i--)
+            while (l1 != null || l2 != null || carryOver ==1)
             {
-                runner.next = new ListNode(int.Parse(sTotal[i].ToString()));
+                int listOneValue;
+                int listTwoValue;
+                if (l1 == null)
+                {
+                    listOneValue = 0;
+                }
+                else
+                {
+                    listOneValue = l1.val;
+                    l1 = l1.next;
+                }
+                if (l2 == null)
+                {
+                    listTwoValue = 0;
+                }
+                else
+                {
+                    listTwoValue = l2.val;
+                    l2 = l2.next;
+                }
+                int stepValue = listOneValue + listTwoValue;
+                stepValue += carryOver;
+                ListNode tempNode = lA;
+                if (stepValue >= 10)
+                {
+                    carryOver = 1;
+                    runner.next = new ListNode(stepValue-10);
+                }
+                else
+                {
+                    carryOver = 0;
+                    runner.next = new ListNode(stepValue);
+                }
                 runner = runner.next;
+                //lA.next = tempNode;
             }
             return lA;
         }
@@ -82,5 +118,4 @@ namespace LinkedListAddition
         public ListNode next;
         public ListNode(int x) { val = x; }
     }
-
 }
