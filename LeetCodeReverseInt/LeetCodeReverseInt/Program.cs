@@ -19,6 +19,7 @@ namespace LeetCodeReverseInt
             Console.ReadLine();
         }
 
+        //Blind method
         public static int ReversInt(int input)
         {
             //Convert input to a string so we can manipulate it as an array
